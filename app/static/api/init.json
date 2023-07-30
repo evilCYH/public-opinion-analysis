@@ -1,0 +1,77 @@
+{
+  "homeInfo": {
+    "title": "首页",
+    "href": "page/main.html?t=1"
+  },
+  "logoInfo": {
+    "title": "舆情分析",
+    "image": "images/logo.png",
+    "href": ""
+  },
+  "menuInfo": [
+    {
+      "title": "舆情分析",
+      "icon": "fa fa-address-book",
+      "href": "",
+      "target": "_self",
+      "child": [
+        {
+          "title": "首页",
+          "href": "page/main.html",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
+        },
+        {
+          "title": "敏感词管理",
+          "href": "page/sensitive_word.html",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
+        },
+        {
+          "title": "热点话题",
+          "href": "page/hot_topic.html",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
+        },
+        {
+          "title": "话题趋势",
+          "href": "page/topic_trends.html",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
+        },
+        {
+          "title": "新闻聚焦",
+          "href": "page/school_news.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+        ,
+        {
+          "title": "情感分析",
+          "href": "page/emotional_analysis.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        },
+        {
+          "title": "微博舆情分析",
+          "href": "page/welcome-2.html",
+          "icon": "fa fa-tachometer",
+          "target": "_self"
+        },
+        {
+          "title": "热门微博列表",
+          "href": "page/weibo.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        },
+        {
+          "title": "热门评论列表",
+          "href": "page/comment.html",
+          "icon": "fa fa-file-text",
+          "target": "_self"
+        }
+        
+      ]
+    }
+  ]
+}

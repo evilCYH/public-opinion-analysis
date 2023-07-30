@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>最新舆情分析</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <style>
+        .top-panel {
+            border: 1px solid #eceff9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .top-panel > .layui-card-body{
+            height: 60px;
+        }
+        .top-panel-number{
+            line-height:60px;
+            font-size: 30px;
+            border-right:1px solid #eceff9;
+        }
+        .top-panel-tips{
+            line-height:30px;
+            font-size: 12px
+        }
+    </style>
+</head>
+<body>
+<!--<div class="layuimini-container">-->
+<div class="layuimini-main">
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-md3">
+
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">累计的微博总数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="weibo_number">
+                            9,054,056
+                        </div>
+                        <!-- <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
+                            比昨天 <a style="color: #1aa094">▲0.12</a><br>
+                            比七日 <a style="color: #bd3004">▼0.06</a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-col-xs12 layui-col-md3">
+
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">累计的评论总数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="comments_count">
+                            9,054,056
+                        </div>
+                        <!-- <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
+                            比昨天 <a style="color: #1aa094">▲0.12</a><br>
+                            比七日 <a style="color: #bd3004">▼0.06</a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-col-xs12 layui-col-md3">
+
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">累计的点赞总数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="attitudes_count">
+                            9,054,056
+                        </div>
+                        <!-- <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
+                            比昨天 <a style="color: #1aa094">▲0.12</a><br>
+                            比七日 <a style="color: #bd3004">▼0.06</a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="layui-col-xs12 layui-col-md3">
+
+            <div class="layui-card top-panel">
+                <div class="layui-card-header">累计的转发总数</div>
+                <div class="layui-card-body">
+                    <div class="layui-row layui-col-space5">
+                        <div class="layui-col-xs9 layui-col-md9 top-panel-number" id="reposts_count">
+                            9,054,056
+                        </div>
+                        <!-- <div class="layui-col-xs3 layui-col-md3 top-panel-tips">
+                            比昨天 <a style="color: #1aa094">▲0.12</a><br>
+                            比七日 <a style="color: #bd3004">▼0.06</a>
+                        </div> -->
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-md9">
+            <div id="echarts-records" style="background-color:#ffffff;min-height:400px;padding: 10px"></div>
+        </div>
+        <div class="layui-col-xs12 layui-col-md3">
+            <div id="echarts-pies" style="background-color:#ffffff;min-height:400px;padding: 10px"></div>
+        </div>
+    </div>
+
+
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-xs12 layui-col-md6">
+            <div id="echarts-dataset" style="background-color:#ffffff;min-height:300px;padding: 10px"></div>
+        </div>
+        <div class="layui-col-xs12 layui-col-md6">
+            <div id="echarts-map" style="background-color:#ffffff;min-height:300px;padding: 10px"></div>
+        </div>
+    </div>
+
+
+</div>
+<!--</div>-->
+<script src="../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="../lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['layer', 'echarts'], function () {
+        var $ = layui.jquery,
+            layer = layui.layer,
+            echarts = layui.echarts;
+        
+        // 查询统计数
+        $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getCount/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    //显示菜单
+                    layer.msg(result.msg);
+                    data = result.data;
+                    $("#weibo_number").text(data.weibo_number)
+                    $("#attitudes_count").text(data.attitudes_count)
+                    $("#comments_count").text(data.comments_count)
+                    $("#reposts_count").text(data.reposts_count)
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+
+        /**
+         * 报表功能
+         */
+        var echartsRecords = echarts.init(document.getElementById('echarts-records'), 'walden');
+
+        xAxis = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        weibo_number_list = []
+        comments_count_list = []
+        reposts_count_list = []
+        attitudes_count_list = []
+        // 查询趋势图
+        $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getWeiboStaticByTime/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    //显示菜单
+                    layer.msg(result.msg);
+                    data = result.data;
+                    xAxis = data.xAxis
+                    weibo_number_list = data.weibo_number_list
+                    comments_count_list = data.comments_count_list
+                    attitudes_count_list = data.attitudes_count_list
+                    reposts_count_list = data.reposts_count_list
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+
+        var optionRecords = {
+            title: {
+                text: '微博热度时间趋势图'
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'cross',
+                    label: {
+                        backgroundColor: '#6a7985'
+                    }
+                }
+            },
+            legend: {
+                data: ['微博数', '评论数', '点赞数', '转发数']
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: [
+                {
+                    type: 'category',
+                    boundaryGap: false,
+                    data: xAxis
+                }
+            ],
+            yAxis: [
+                {
+                    type: 'value'
+                }
+            ],
+            series: [
+                {
+                    name: '微博数',
+                    type: 'line',
+                    areaStyle: {},
+                    data: weibo_number_list
+                },
+                {
+                    name: '评论数',
+                    type: 'line',
+                    areaStyle: {},
+                    data: comments_count_list
+                },
+                {
+                    name: '点赞数',
+                    type: 'line',
+                    areaStyle: {},
+                    data: attitudes_count_list
+                },
+                {
+                    name: '转发数',
+                    type: 'line',
+                    areaStyle: {},
+                    data: reposts_count_list
+                }
+            ]
+        };
+        echartsRecords.setOption(optionRecords);
+
+
+        /**
+         * 玫瑰图表
+         */
+        var echartsPies = echarts.init(document.getElementById('echarts-pies'), 'walden');
+        gender_series = []
+        // 查询性别分布
+        $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getWeiboGender/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    //显示菜单
+                    layer.msg(result.msg);
+                    gender_series = result.data;
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+        var optionPies = {
+            title: {
+                text: '高校微博活跃用户性别分布',
+                left: 'center'
+            },
+            tooltip: {
+                trigger: 'item',
+                formatter: '{a} <br/>{b} : {c} ({d}%)'
+            },
+            legend: {
+                orient: 'vertical',
+                left: 'left',
+                data: ['男', '女']
+            },
+            series: [
+                {
+                    name: '高校微博活跃用户性别分布',
+                    type: 'pie',
+                    radius: '55%',
+                    center: ['50%', '60%'],
+                    data: gender_series,
+                    emphasis: {
+                        itemStyle: {
+                            shadowBlur: 10,
+                            shadowOffsetX: 0,
+                            shadowColor: 'rgba(0, 0, 0, 0.5)'
+                        }
+                    }
+                }
+            ]
+        };
+        echartsPies.setOption(optionPies);
+
+
+        series_top10 = []
+        yAxis_top10 = []
+        // 查询微博话题排行榜TOP10
+        $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getTop10Topic/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    //显示菜单
+                    layer.msg(result.msg);
+                    data = result.data;
+                    yAxis_top10 = data.yAxis
+                    series_top10 = data.series
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+
+        /**
+         * 柱状图
+         */
+        var echartsDataset = echarts.init(document.getElementById('echarts-dataset'), 'walden');
+
+        var optionDataset = {
+            title: {
+                text: '微博话题排行榜TOP10',
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['微博参与的话题数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: yAxis_top10
+            },
+            series: [
+                {
+                    name: '微博参与的话题数',
+                    type: 'bar',
+                    data: series_top10
+                }
+            ]
+        };
+
+        echartsDataset.setOption(optionDataset);
+
+
+        /**
+         * 查询微博话题排行榜TOP10
+         */
+        var echartsMap = echarts.init(document.getElementById('echarts-map'), 'walden');
+        var yAxis_hot_top10 = []
+        var hot_comments_count_list = []
+        var hot_reposts_count_list = []
+        var hot_attitudes_count_list = []
+        // 查询微博话题活跃度排行榜TOP10
+        $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getTop10HotTopic/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    //显示菜单
+                    layer.msg(result.msg);
+                    data = result.data;
+                    yAxis_hot_top10 = data.yAxis
+                    hot_attitudes_count_list = data.attitudes_count_list
+                    hot_comments_count_list = data.comments_count_list
+                    hot_reposts_count_list = data.reposts_count_list
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+
+        var optionMap = {
+            title: {
+                text: '微博话题活跃度排行榜TOP10',
+            },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: {
+                    type: 'shadow'
+                }
+            },
+            legend: {
+                data: ['评论数', '点赞数', '转发数']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            xAxis: {
+                type: 'value',
+                boundaryGap: [0, 0.01]
+            },
+            yAxis: {
+                type: 'category',
+                data: yAxis_hot_top10
+            },
+            series: [
+                {
+                    name: '评论数',
+                    type: 'bar',
+                    data: series_top10
+                },
+                {
+                    name: '点赞数',
+                    type: 'bar',
+                    data: series_top10
+                },
+                {
+                    name: '转发数',
+                    type: 'bar',
+                    data: series_top10
+                }
+            ]
+        };
+
+        echartsMap.setOption(optionMap);
+
+
+        // echarts 窗口缩放自适应
+        window.onresize = function () {
+            echartsRecords.resize();
+        }
+
+    });
+</script>
+</body>
+</html>

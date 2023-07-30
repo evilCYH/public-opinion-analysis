@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>热点话题</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../lib/layui-v2.5.5/css/layui.css" media="all">
+    <link rel="stylesheet" href="../lib/font-awesome-4.7.0/css/font-awesome.min.css" media="all">
+    <link rel="stylesheet" href="../css/public.css" media="all">
+    <style>
+        .top-panel {
+            border: 1px solid #eceff9;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .top-panel > .layui-card-body{
+            height: 60px;
+        }
+        .top-panel-number{
+            line-height:60px;
+            font-size: 30px;
+            border-right:1px solid #eceff9;
+        }
+        .top-panel-tips{
+            line-height:30px;
+            font-size: 12px
+        }
+        .word{
+            background-color:#ffffff;
+            width: 100%;
+        }
+
+        .tongzhiList{
+            margin-top: 7px;
+            width: 100%;
+        }
+
+        .tongzhiList li{
+            display: flex;
+            justify-content: space-between;
+            width:100%;
+            height:28px;
+            font-size:14px;
+            font-family:PingFang-SC-Regular;
+            font-weight:400;
+            color:blue;
+            line-height:28px;
+            margin-top: 10px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+<div class="layuimini-container">
+    <div class="layuimini-main">
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs12 layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">每周热词</div>
+                    <div class="layui-card-body">
+                        <img src="../images/week.png" class="word">
+                    </div>
+                </div>
+                <!-- <div id="echarts1" class="echarts1" style="background-color:#ffffff;width: 100%;;padding: 10px"></div> -->
+            </div>
+            <div class="layui-col-xs12 layui-col-md6">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        最新舆情
+                    </div>
+                    <div class="layui-card-body">
+                        <ul class="tongzhiList" id="lastNews">
+                            <li>
+                                组组组组组组组偶组长
+                            </li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                            <li>组组组组组组组偶组长</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div class="layui-row layui-col-space15">
+            <div class="layui-col-xs12 layui-col-md12">
+                <div class="layui-card">
+                    <div class="layui-card-header">
+                        每周热点话题
+                    </div>
+                    <div class="layui-card-body">
+                        <fieldset class="table-search-fieldset">
+                            <legend>搜索信息</legend>
+                            <div style="margin: 10px 10px 10px 10px">
+                                <form class="layui-form layui-form-pane" action="">
+                                    <div class="layui-form-item">
+                                        <div class="layui-inline">
+                                            <label class="layui-form-label">关键词</label>
+                                            <div class="layui-input-inline">
+                                                <input type="text" name="keywords" id="keywords" autocomplete="off" class="layui-input">
+                                            </div>
+                                        </div>
+                                        <div class="layui-inline">
+                                            <button type="submit" class="layui-btn layui-btn-primary" lay-submit  lay-filter="search"><i class="layui-icon"></i> 搜 索</button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </fieldset>
+                        <table class="layui-hide" id="currentTableId" lay-filter="currentTableFilter"></table>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../lib/layui-v2.5.5/layui.js" charset="utf-8"></script>
+<script src="../js/lay-config.js?v=1.0.4" charset="utf-8"></script>
+<script src="../lib/jquery-3.4.1/jquery-3.4.1.min.js" charset="utf-8"></script>
+<script>
+    layui.use(['form', 'table'], function () {
+        var $ = layui.jquery,
+            form = layui.form,
+            table = layui.table;
+
+        table.render({
+            elem: '#currentTableId',
+            url: '/api/business/getHotTopic/',
+            cols: [[
+                {field: 'topics', minwidth: 600, title: '话题内容'},
+                {field: 'comments_count', title: '评论或回复人数'},
+                {field: 'attitudes_count', title: '点赞人数'},
+                {field: 'reposts_count', title: '转发人数'},
+            ]],
+            limits: [10, 15, 20],
+            limit: 10,
+            page: true
+        });
+
+        getLastNews()
+        function getLastNews(){
+            $.ajax({
+            type:"get",
+            async:false,
+            url:"/api/business/getLastTopic/",
+            success:function(result) {
+                if (result.code = 200) { 
+                    data = result.data;
+                    setLastNews(data)
+                } else {
+                    layer.msg(result.msg);
+                }
+            },
+            error:function(result) {
+                layer.msg("系统异常");
+            }
+        });
+        }
+
+        function setLastNews(){
+            htmlstr = ''
+            for(i=0;i<data.length;i++){
+                temp = '<li class="news" >'+data[i].title+'</li>'
+                htmlstr = htmlstr+temp   
+            }
+            $("#lastNews").html(htmlstr)
+        }
+
+
+        
+        // 监听搜索操作
+        form.on('submit(search)', function (data) {
+            var result = JSON.stringify(data.field);
+            keywords = data.field.keywords
+            //执行搜索重载
+            table.reload('currentTableId', {
+                page: {
+                    curr: 1
+                }
+                , where: {
+                    'keywords': keywords
+                }
+            }, 'data');
+
+            return false;
+        });
+
+        
+
+    });
+</script>
+</body>
+</html>
